@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мини-приложение бота</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e2f; /* Темный фон */
+            margin: 0;
+            padding: 20px;
+            color: #ffffff; /* Белый текст */
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff; /* Белый текст */
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #2a2a40; /* Темный контейнер */
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background-color: #3a3a5a; /* Темный фон для полей ввода */
+            color: #ffffff; /* Белый текст */
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .hidden {
+            display: none;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Мини-приложение бота</h1>
+
+        <!-- Кнопки для основных действий -->
+        <button onclick="sendCommand('shop')">Магазин</button>
+        <button onclick="sendCommand('statistics')">Статистика</button>
+        <button onclick="sendCommand('contacts')">Контакты</button>
+        <button onclick="sendCommand('autopost_settings')">Настройки автопостинга</button>
+
+        <!-- Форма для автопостинга -->
+        <div id="autopostForm" class="hidden">
+            <div class="section-title">Настройки автопостинга</div>
+            <select id="regionSelect">
+                <option value="Воронежская область">Воронежская область</option>
+                <option value="Московская область">Московская область</option>
+                <option value="Тульская область">Тульская область</option>
+                <option value="Смоленская область">Смоленская область</option>
+                <option value="Брянская область">Брянская область</option>
+                <option value="Вологодская область">Вологодская область</option>
+                <option value="Украина">Украина</option>
+            </select>
+            <button onclick="setRegion()">Выбрать регион</button>
+        </div>
+
+        <!-- Форма для запроса удаления поста -->
+        <div id="deletePostForm" class="hidden">
+            <div class="section-title">Запрос удаления поста</div>
+            <textarea id="postDescription" placeholder="Опишите пост, который нужно удалить"></textarea>
+            <button onclick="requestDeletePost()">Отправить запрос</button>
+        </div>
+
+        <!-- Форма для удаления своего поста -->
+        <div id="deleteOwnPostForm" class="hidden">
+            <div class="section-title">Удаление своего поста</div>
+            <textarea id="ownPostDescription" placeholder="Опишите пост, который нужно удалить"></textarea>
+            <button onclick="requestDeleteOwnPost()">Отправить запрос</button>
+        </div>
+
+        <!-- Форма для автопостинга -->
+        <div id="autopostRequestForm" class="hidden">
+            <div class="section-title">Запрос автопостинга</div>
+            <button onclick="confirmAutoPublish()">Подтвердить автопостинг</button>
+        </div>
+    </div>
+
+    <script>
+        // Функция для отправки команд боту
+        function sendCommand(command) {
+            if (command === 'autopost_settings') {
+                document.getElementById('autopostForm').classList.remove('hidden');
+            } else if (command === 'shop') {
+                document.getElementById('deletePostForm').classList.remove('hidden');
+                document.getElementById('deleteOwnPostForm').classList.remove('hidden');
+                document.getElementById('autopostRequestForm').classList.remove('hidden');
+            } else {
+                Telegram.WebApp.sendData(command);
+            }
+        }
+
+        // Функция для выбора региона
+        function setRegion() {
+            const region = document.getElementById('regionSelect').value;
+            Telegram.WebApp.sendData(`set_region:${region}`);
+        }
+
+        // Функция для запроса удаления поста
+        function requestDeletePost() {
+            const description = document.getElementById('postDescription').value;
+            Telegram.WebApp.sendData(`delete_post:${description}`);
+        }
+
+        // Функция для запроса удаления своего поста
+        function requestDeleteOwnPost() {
+            const description = document.getElementById('ownPostDescription').value;
+            Telegram.WebApp.sendData(`delete_own_post:${description}`);
+        }
+
+        // Функция для подтверждения автопостинга
+        function confirmAutoPublish() {
+            Telegram.WebApp.sendData('confirm_autopost');
+        }
+    </script>
+</body>
+</html>
